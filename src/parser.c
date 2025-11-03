@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "instructions.h"
 
 #define OPCODE_MASK 0x0000007F
 
@@ -101,7 +102,10 @@ static InstructionHandler get_handler(uint32_t instruction, uint8_t opcode, uint
         case 0b0010111: return handle_auipc;
         case 0b0110111: return handle_lui;
     }
-    // TODO: Just Fence, Fencei, Ecall & Ebreak left... these need the whole instruction
+    if(instruction == 0x00100073) return handle_ebreak;
+    if(instruction == 0x00000073) return handle_ecall;
+    if(instruction == 0x0000100F) return handle_fencei;
+    if((instruction & 0xF00FFFFF) == 0x0000000F) return handle_fence;
     return handle_undefined;
 }
 
@@ -148,18 +152,16 @@ InstructionStructure get_structure(uint32_t instruction) {
             break;
         case JTYPE:
             structure.rd        =   (instruction >> 7) & 0x1F;
-            uint32_t im_20     =   (instruction & 0x80000000) >> 11;
-            uint32_t im_10_1   =   (instruction & 0x7FE00000) >> 20;
-            uint32_t im_11_j     =   (instruction & 0x00100000) >> 9;
-            uint32_t im_19_12  =   (instruction & 0x000FF000);
+            uint32_t im_20      =   (instruction & 0x80000000) >> 11;
+            uint32_t im_10_1    =   (instruction & 0x7FE00000) >> 20;
+            uint32_t im_11_j    =   (instruction & 0x00100000) >> 9;
+            uint32_t im_19_12   =   (instruction & 0x000FF000);
             structure.imm       =   (int32_t)(im_20 | im_19_12 | im_11_j | im_10_1);
             break;
-
-        // TODO: ENV, UNDEF & FENCE and check STYPE, BTYPE, JTYPE not so sure
-        // Check ISA-unprivileged chapter 2
-        // Remember to handle pred, succ from fence...
-        // Maybe union in InstructionStructure? idk this way is easier xdxdx
-
+        case FENCE:
+            structure.pred      =   (instruction & 0x0F000000) >> 24;
+            structure.succ      =   (instruction & 0x00F00000) >> 20;
+            break;
         default: break;
     }
 

@@ -24,6 +24,8 @@ typedef struct InstructionStructure {
   uint8_t rs2;      // 5 bits
   uint8_t rd;       // 5 bits
   uint32_t imm;     // at most 20 bits
+  uint8_t pred;     // For fence
+  uint8_t succ;     // For fence
 
   uint8_t funct7;   // 7 bits
   uint8_t funct3;   // 3 bits
