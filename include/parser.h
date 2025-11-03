@@ -2,15 +2,32 @@
 
 #include <stdint.h>
 
+// We'll need masks
+
 enum OpcodeType {
-  RTYPE,    // Register to register
-  ITYPE,    // Immediate and load
-  STYPE,    // Store instructions
-  BTYPE,    // Branch operations
-  UTYPE,    // Upper immediate
-  JTYPE,    // Unconditional jump instructions
-  ENV       // Environment calls (check FENCE, ECALL, EBREAK) Check later if we need some other like RDTIME, RDCYCLE, etc
+  RTYPE,        // Register to register
+  ITYPE,        // Immediate and load
+  STYPE,        // Store instructions
+  BTYPE,        // Branch operations
+  UTYPE,        // Upper immediate
+  JTYPE,        // Unconditional jump instructions
+  ENV,          // Environment calls (check FENCE, ECALL, EBREAK) Check later if we need some other like RDTIME, RDCYCLE, etc
+  UNDEF         // Undefined
 };
+
+typedef struct {
+  enum OpcodeType type;
+  uint32_t instruction;
+
+  uint8_t rs1;      // 5 bits
+  uint8_t rs2;      // 5 bits
+  uint8_t rd;       // 5 bits
+  uint32_t imm;     // at most 20 bits
+
+  uint8_t funct7;   // 7 bits
+  uint8_t funct3;   // 3 bits
+  uint8_t opcode;   // 7 bits
+} InstructionStructure;
 
 /*
  * R-TYPE   funct7       -   rs2     -   rs1     -   funct3  -   rd       -   opcode
@@ -55,5 +72,8 @@ enum OpcodeType {
  *
  */
 
-// Example :v
-void handle_add(uint32_t);
+// Just getting the type, check up here before and refine it before implementing
+enum OpcodeType get_type(uint8_t);
+
+// Getting all structure (inside here we use get_type())
+InstructionStructure get_structure(uint32_t);

@@ -1,11 +1,12 @@
 #include "state.h"
-#include "opcodes.h"
-
-#include <stdio.h>
+#include "instructions.h"
+#include "parser.h"
 
 int main(int argc, char* argv[]) {
-    printf("hola...\n");
-    handle_add(0xCACA);
+    registers[1] = 2;
+    registers[2] = 3;
+
+    // Adding x1 + x2 in x3
 
     return 0;
 }
