@@ -110,21 +110,52 @@ InstructionStructure get_structure(uint32_t instruction) {
     structure.instruction = instruction;
 
     structure.opcode    =   instruction & OPCODE_MASK;
-    structure.rd        =   (instruction >> 7) & 0x1F;
-    structure.funct3    =   (instruction >> 12) & 0x07;
-    structure.rs1       =   (instruction >> 15) & 0x07;
-    structure.rs2       =   (instruction >> 20) & 0x1F;
-    structure.funct7    =   (instruction >> 25) & 0x7F;
+    structure.funct3    =   (instruction >> 12) & 0x07;         // Most of them have this so ig its better this way?
 
-    // TODO: We are double checking, find a way to optimise this :)))))))))))))))
     structure.type = get_type(structure.opcode, structure.funct3);
 
     switch(structure.type) {
-        case RTYPE: break;
-        case UTYPE:
-            structure.imm = instruction & 0xFFFFF000;
+        case RTYPE:
+            structure.rd        =   (instruction >> 7) & 0x1F;
+            structure.rs1       =   (instruction >> 15) & 0x1F;
+            structure.rs2       =   (instruction >> 20) & 0x1F;
+            structure.funct7    =   (instruction >> 25) & 0x7F;
             break;
-        // TODO: Missing types to get immediates
+        case UTYPE:
+            structure.rd        =   (instruction >> 7) & 0x1F;
+            structure.imm       =   instruction & 0xFFFFF000;
+            break;
+        case ITYPE:
+            structure.rd        =   (instruction >> 7) & 0x1F;
+            structure.rs1       =   (instruction >> 15) & 0x1F;
+            structure.imm       =   (int32_t)(instruction & 0xFFF00000) >> 20;
+            break;
+        case STYPE:
+            structure.rs1       =   (instruction >> 15) & 0x1F;
+            structure.rs2       =   (instruction >> 20) & 0x1F;
+            uint32_t im_11_5    =   (instruction & 0xFE000000) >> 20;
+            uint32_t im_4_0     =   (instruction & 0x00000F80) >> 7;
+            structure.imm       =   (int32_t)(im_11_5 | im_4_0);
+            break;
+        case BTYPE:
+            structure.rs1       =   (instruction >> 15) & 0x1F;
+            structure.rs2       =   (instruction >> 20) & 0x1F;
+            uint32_t im_12      =   (instruction & 0x80000000) >> 19;
+            uint32_t im_11      =   (instruction & 0x00000080) << 4;
+            uint32_t im_10_5    =   (instruction & 0x7E000000) >> 20;
+            uint32_t im_4_1     =   (instruction & 0x00000F00) >> 7;
+            structure.imm       =   (int32_t)(im_12 | im_11 | im_10_5 | im_4_1);
+            break;
+        case JTYPE:
+            structure.rd        =   (instruction >> 7) & 0x1F;
+            uint32_t im_20     =   (instruction & 0x80000000) >> 11;
+            uint32_t im_10_1   =   (instruction & 0x7FE00000) >> 20;
+            uint32_t im_11_j     =   (instruction & 0x00100000) >> 9;
+            uint32_t im_19_12  =   (instruction & 0x000FF000);
+            structure.imm       =   (int32_t)(im_20 | im_19_12 | im_11_j | im_10_1);
+            break;
+
+        // TODO: ENV, UNDEF & FENCE and check STYPE, BTYPE, JTYPE not so sure
         // Check ISA-unprivileged chapter 2
         // Remember to handle pred, succ from fence...
         // Maybe union in InstructionStructure? idk this way is easier xdxdx
@@ -132,6 +163,7 @@ InstructionStructure get_structure(uint32_t instruction) {
         default: break;
     }
 
+    // TODO: We are double checking, find a way to optimise this :)))))))))))))))
     structure.handler = get_handler(structure.instruction, structure.opcode, structure.funct3, structure.funct7);
 
     return structure;
