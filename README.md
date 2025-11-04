@@ -44,6 +44,8 @@ All information needed is at:
 * [RISC-V Unprivileged Architecture](https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf)
 * [RISC-V Privileged Architecture](https://docs.riscv.org/reference/isa/_attachments/riscv-privileged.pdf)
 * [Opcode Information](https://www.cs.unh.edu/~pjh/courses/cs520/15spr/riscv-rv32i-instructions.pdf)
+* [Instruction Set](https://dejazzer.com/coen2710/lectures/RISC-V-Reference-Data-Green-Card.pdf)
+
 ---
 
 ## Out of Scope
