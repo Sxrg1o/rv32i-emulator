@@ -18,7 +18,6 @@ enum OpcodeType {
 typedef struct InstructionStructure {
   enum OpcodeType type;
   InstructionHandler handler;
-  uint32_t instruction;
 
   uint8_t rs1;      // 5 bits
   uint8_t rs2;      // 5 bits
@@ -27,9 +26,6 @@ typedef struct InstructionStructure {
   uint8_t pred;     // For fence
   uint8_t succ;     // For fence
 
-  uint8_t funct7;   // 7 bits
-  uint8_t funct3;   // 3 bits
-  uint8_t opcode;   // 7 bits
 } InstructionStructure;
 
 /*

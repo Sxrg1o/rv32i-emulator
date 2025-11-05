@@ -15,12 +15,9 @@ bool test_rtype_add() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == RTYPE);
-    ASSERT(structure.opcode == 0b0110011);
     ASSERT(structure.rd == 5);
-    ASSERT(structure.funct3 == 0x0);
     ASSERT(structure.rs1 == 10);
     ASSERT(structure.rs2 == 20);
-    ASSERT(structure.funct7 == 0x00);
     ASSERT(structure.handler == handle_add);
 
     return true;
@@ -37,9 +34,7 @@ bool test_itype_addi() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == ITYPE);
-    ASSERT(structure.opcode == 0b0010011);
     ASSERT(structure.rd == 5);
-    ASSERT(structure.funct3 == 0x0);
     ASSERT(structure.rs1 == 10);
     ASSERT(structure.imm == -50);
     ASSERT(structure.handler == handle_addi);
@@ -57,12 +52,9 @@ bool test_itype_shift_slli() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == RTYPE);
-    ASSERT(structure.opcode == 0b0010011);
     ASSERT(structure.rd == 5);
-    ASSERT(structure.funct3 == 0x1);
     ASSERT(structure.rs1 == 10);
     ASSERT(structure.rs2 == 4);
-    ASSERT(structure.funct7 == 0x00);
     ASSERT(structure.handler == handle_slli);
 
     return true;
@@ -79,8 +71,6 @@ bool test_stype_sw() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == STYPE);
-    ASSERT(structure.opcode == 0b0100011);
-    ASSERT(structure.funct3 == 0x2);
     ASSERT(structure.rs1 == 10);
     ASSERT(structure.rs2 == 20);
     ASSERT(structure.handler == handle_sw);
@@ -100,8 +90,6 @@ bool test_btype_beq() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == BTYPE);
-    ASSERT(structure.opcode == 0b1100011);
-    ASSERT(structure.funct3 == 0x0);
     ASSERT(structure.rs1 == 10);
     ASSERT(structure.rs2 == 20);
     ASSERT(structure.handler == handle_beq);
@@ -121,7 +109,6 @@ bool test_utype_lui() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == UTYPE);
-    ASSERT(structure.opcode == 0b0110111);
     ASSERT(structure.rd == 5);
     ASSERT(structure.imm == 0xABCDE000);
     ASSERT(structure.handler == handle_lui);
@@ -140,7 +127,6 @@ bool test_jtype_jal() {
     InstructionStructure structure = get_structure(instruction_hex);
 
     ASSERT(structure.type == JTYPE);
-    ASSERT(structure.opcode == 0b1101111);
     ASSERT(structure.rd == 5);
     ASSERT(structure.handler == handle_jal);
     ASSERT(structure.imm == -32);
@@ -208,6 +194,36 @@ bool test_undefined2() {
     return true;
 }
 
+/**
+ * Test undefined fence instruction
+ * Bin: 1010 0000 0000 0000 0000 0000 0000 1111
+ * Hex: 0xA000000F
+ */
+bool test_undefined3() {
+    uint32_t instruction_hex = 0xA000000F;
+    InstructionStructure structure = get_structure(instruction_hex);
+
+    ASSERT(structure.type == UNDEF);
+    ASSERT(structure.handler == handle_undefined);
+
+    return true;
+}
+
+/**
+ * Test undefined fencei instruction
+ * Bin: 1111 1111 1111 0000 0001 0000 0000 1111
+ * Hex: 0xFFF0100F
+ */
+bool test_undefined4() {
+    uint32_t instruction_hex = 0xFFF0100F;
+    InstructionStructure structure = get_structure(instruction_hex);
+
+    ASSERT(structure.type == UNDEF);
+    ASSERT(structure.handler == handle_undefined);
+
+    return true;
+}
+
 
 int test_parser() {
     printf("Starting tests for parser\n\n");
@@ -224,6 +240,8 @@ int test_parser() {
     RUN_TEST(parser, test_fence_call);
     RUN_TEST(parser, test_undefined1);
     RUN_TEST(parser, test_undefined2);
+    RUN_TEST(parser, test_undefined3);
+    RUN_TEST(parser, test_undefined4);
 
     PRINT_TEST_SUMMARY(parser);
     return parser_total_tests - parser_successful_tests;
