@@ -4,6 +4,7 @@
 #define OPCODE_MASK 0x0000007F
 
 enum OpcodeType get_type(uint8_t opcode, uint8_t funct3) {
+    // More undefined cases, check this
     switch (opcode) {
         case 0b0110011: return RTYPE;
         case 0b0100011: return STYPE;

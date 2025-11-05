@@ -163,18 +163,51 @@ bool test_special_ebreak() {
 }
 
 /**
+ * Test fence
+ * Bin: 0000 XXXX XXXX 0000 0000 0000 0000 1111
+ * Hex: 0x0AB0000F
+ */
+bool test_fence_call() {
+    uint32_t instruction_hex = 0x0AB0000F;
+    InstructionStructure structure = get_structure(instruction_hex);
+
+    ASSERT(structure.type == FENCE);
+    ASSERT(structure.pred == 10);
+    ASSERT(structure.succ == 11);
+    ASSERT(structure.handler == handle_fence);
+
+    return true;
+}
+
+/**
  * Test undefined
  * Bin: 1010 1011 1100 1101 1110 1111 0 0010010
  */
- bool test_undefined() {
-     uint32_t instruction_hex = 0xABCDEF12;
-     InstructionStructure structure = get_structure(instruction_hex);
+bool test_undefined1() {
+    uint32_t instruction_hex = 0xABCDEF12;
+    InstructionStructure structure = get_structure(instruction_hex);
 
-     ASSERT(structure.type == UNDEF);
-     ASSERT(structure.handler == handle_undefined);
+    ASSERT(structure.type == UNDEF);
+    ASSERT(structure.handler == handle_undefined);
 
-     return true;
- }
+    return true;
+}
+
+/**
+ * Test undefined funct3
+ * Bin: 0001 0000 0010 0010 0001 0101 0110 0111
+ * Hex: 0x10221567
+ */
+bool test_undefined2() {
+    uint32_t instruction_hex = 0x10221567;
+    InstructionStructure structure = get_structure(instruction_hex);
+
+    ASSERT(structure.type == UNDEF);
+    ASSERT(structure.handler == handle_undefined);
+
+    return true;
+}
+
 
 int test_parser() {
     printf("Starting tests for parser\n\n");
@@ -188,7 +221,9 @@ int test_parser() {
     RUN_TEST(parser, test_btype_beq);
     RUN_TEST(parser, test_jtype_jal);
     RUN_TEST(parser, test_special_ebreak);
-    RUN_TEST(parser, test_undefined);
+    RUN_TEST(parser, test_fence_call);
+    RUN_TEST(parser, test_undefined1);
+    RUN_TEST(parser, test_undefined2);
 
     PRINT_TEST_SUMMARY(parser);
     return parser_total_tests - parser_successful_tests;
