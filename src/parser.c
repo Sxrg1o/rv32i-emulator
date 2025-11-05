@@ -139,7 +139,8 @@ InstructionStructure get_structure(uint32_t instruction) {
             structure.rs2       =   (instruction >> 20) & 0x1F;
             uint32_t im_11_5    =   (instruction & 0xFE000000) >> 20;
             uint32_t im_4_0     =   (instruction & 0x00000F80) >> 7;
-            structure.imm       =   (int32_t)(im_11_5 | im_4_0);
+            uint32_t imm_s      =   im_11_5 | im_4_0;
+            structure.imm       =   (int32_t)(imm_s << 20) >> 20;
             break;
         case BTYPE:
             structure.rs1       =   (instruction >> 15) & 0x1F;
@@ -148,7 +149,8 @@ InstructionStructure get_structure(uint32_t instruction) {
             uint32_t im_11      =   (instruction & 0x00000080) << 4;
             uint32_t im_10_5    =   (instruction & 0x7E000000) >> 20;
             uint32_t im_4_1     =   (instruction & 0x00000F00) >> 7;
-            structure.imm       =   (int32_t)(im_12 | im_11 | im_10_5 | im_4_1);
+            uint32_t imm_b      =   im_12 | im_11 | im_10_5 | im_4_1;
+            structure.imm       =   (int32_t)(imm_b << 19) >> 19;
             break;
         case JTYPE:
             structure.rd        =   (instruction >> 7) & 0x1F;
@@ -156,7 +158,8 @@ InstructionStructure get_structure(uint32_t instruction) {
             uint32_t im_10_1    =   (instruction & 0x7FE00000) >> 20;
             uint32_t im_11_j    =   (instruction & 0x00100000) >> 9;
             uint32_t im_19_12   =   (instruction & 0x000FF000);
-            structure.imm       =   (int32_t)(im_20 | im_19_12 | im_11_j | im_10_1);
+            uint32_t imm_j      =   im_20 | im_19_12 | im_11_j | im_10_1;
+            structure.imm       =   (int32_t)(imm_j << 11) >> 11;
             break;
         case FENCE:
             structure.pred      =   (instruction & 0x0F000000) >> 24;
