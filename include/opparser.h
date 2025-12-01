@@ -37,8 +37,5 @@ typedef struct InstructionStructure {
  * J-TYPE   imm[20|10:1|11|19:12]    -   rd      -   opcode
  */
 
-// Just getting the type, check up here before and refine it before implementing
-enum OpcodeType get_type(uint8_t, uint8_t);
-
 // Getting all structure (inside here we use get_type())
 InstructionStructure get_structure(uint32_t);

@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "opparser.h"
 #include "instructions.h"
 
 #define OPCODE_MASK 0x0000007F

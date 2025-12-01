@@ -1,6 +1,6 @@
 #include "instructions.h"
 #include "state.h"
-#include "parser.h"
+#include "opparser.h"
 
 void handle_lui(struct InstructionStructure* inst) {
     registers[inst->rd] = inst->imm;

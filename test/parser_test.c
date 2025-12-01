@@ -1,5 +1,5 @@
 #include "instructions.h"
-#include "parser.h"
+#include "opparser.h"
 #include "test_utils.h"
 #include <stdio.h>
 #include <stdint.h>
